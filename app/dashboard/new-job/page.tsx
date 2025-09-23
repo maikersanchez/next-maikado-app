@@ -35,7 +35,7 @@ export default function NewJobPage() {
     console.log("Submitting form data:", formData);
 
     try {
-      const response = await fetch("http://localhost:8000/create-job", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/create-job`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

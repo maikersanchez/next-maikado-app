@@ -59,7 +59,7 @@ export default function JobStatusPageClient() {
   const fetchJobs = React.useCallback(async () => {
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:8000/jobs");
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/jobs`);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -110,7 +110,7 @@ export default function JobStatusPageClient() {
     async (jobId: string) => {
       try {
         const response = await fetch(
-          `http://localhost:8000/jobs/${jobId}/retry`,
+          `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/jobs/${jobId}/retry`,
           {
             method: "POST",
           },
