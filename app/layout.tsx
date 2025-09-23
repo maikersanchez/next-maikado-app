@@ -8,6 +8,7 @@ import { Providers } from "./providers";
 import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
 import { Navbar } from "@/components/navbar";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: {
@@ -61,17 +62,15 @@ export default function RootLayout({
             </footer>
           </div>
         </Providers>
-                <script
-                    dangerouslySetInnerHTML={{
-                        __html: `
-                            window.MAIKADO_CONFIG = {
-                                BACKEND_API_URL: '${process.env.NEXT_PUBLIC_BACKEND_API_URL}'
-                            };
-                        `,
-                    }}
-                />
-                <Script src="/tracking.js" />
-            </body>
+        <Script id="maikado-config">
+          {`
+            window.MAIKADO_CONFIG = {
+              BACKEND_API_URL: '${process.env.NEXT_PUBLIC_BACKEND_API_URL || ''}'
+            };
+          `}
+        </Script>
+        <Script src="/tracking.js" />
+      </body>
     </html>
   );
 }
