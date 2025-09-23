@@ -1,0 +1,36 @@
+
+**Project Title:** n8n Advanced Promoter
+
+**Objective:** Automate the creation of high-quality product listings for Shopify, including copywriting, image generation, and video script creation, to streamline the content creation process and improve marketing efficiency.
+
+**Key Features:**
+
+*   **Modular n8n Workflow:**
+    *   Webhook/API endpoint to receive data from a frontend (Bubble/Softr).
+    *   Process inputs and call OpenAI for copy, prompts, and scripts.
+    *   Call DALL-E/Stable Diffusion for image generation.
+    *   Generate UGC video scripts and storyboards.
+    *   Save all generated content to a database (Airtable/Notion/Supabase).
+    *   Export the product as a draft to Shopify.
+    *   Log all activities in Google Sheets and a TXT/Markdown file.
+*   **Customizable Frontend:**
+    *   A form with fields for language, product name, price, currency, brand, materials, niche, copy template, number of images/videos, customer pain points, and target audience.
+    *   Checkboxes for enabling/disabling SEO tags, UGC scripts, and Shopify export.
+*   **Expanded Database:**
+    *   A database schema to store product information, generated content, and performance metrics (CTR, conversions, review notes).
+*   **Advanced Prompt Engineering:**
+    *   Dynamic prompts for copywriting that adapt to specific pain points.
+    *   Differentiated image prompts for various scenarios (problem, solution, lifestyle, UGC).
+    *   Structured video script prompts with CTAs and storyboards.
+*   **Comprehensive Documentation:**
+    *   A README file with a step-by-step guide on how to import the n8n workflow, connect the frontend and database, run tests, and measure performance.
+
+**User Flow:**
+
+1.  User fills out the form in the frontend (Bubble/Softr).
+2.  The frontend sends the data to the n8n webhook.
+3.  n8n processes the data, generates copy, prompts, scripts, and SEO tags.
+4.  n8n generates images and UGC video scripts.
+5.  All generated content is saved to the database and Google Sheets.
+6.  A new product is created as a draft in Shopify with the generated content.
+7.  The user can view the new product and its performance metrics in a dashboard.

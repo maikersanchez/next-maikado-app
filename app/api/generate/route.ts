@@ -1,0 +1,176 @@
+import { NextResponse } from "next/server";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY as string);
+
+export async function POST(request: Request) {
+  const body = await request.json();
+  const {
+    productName,
+    productPrice,
+    productUrl,
+    language,
+    currency,
+    numImages,
+    numVideos,
+    figmaTemplate,
+    painPoints,
+  } = body;
+
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+  const prompt = `
+    You are an expert in e-commerce marketing and user-generated content (UGC) video creation.
+    Create a compelling set of marketing materials for a product with the following details:
+    - Product Name: ${productName}
+    - Product Price: ${productPrice} ${currency}
+    - Product URL: ${productUrl}
+    - Language: ${language}
+    - Number of images to generate: ${numImages}
+    - Number of videos to generate: ${numVideos}
+    - Figma template: ${figmaTemplate}
+    - Customer Pain Points: ${painPoints}
+
+    Please provide the output in a JSON format with the following keys:
+    - "description": A compelling product description.
+    - "seo_keywords": A list of 5-10 relevant SEO keywords.
+    - "video_script": An array of objects, where each object represents a scene for a 30-second UGC video ad. Each scene object should have the following keys:
+        - "scene_number": The number of the scene.
+        - "hook": (Only for the first scene) A captivating opening to grab attention.
+        - "problem": (Only for relevant scenes) Highlighting a common pain point the product solves.
+        - "solution": (Only for relevant scenes) Introducing the product as the solution.
+        - "demonstration": (Only for relevant scenes) Showing the product in action.
+        - "benefits": (Only for relevant scenes) Emphasizing the advantages of using the product.
+        - "visuals": A detailed description of what should be seen on screen.
+        - "audio": A detailed description of what should be heard (dialogue, music, sound effects).
+        - "duration": The duration of the scene in seconds.
+        - "call_to_action": (Only for the last scene) Guiding the viewer on what to do next.
+    - "image_prompts": A list of ${numImages} detailed image prompts for the product.
+  `;
+
+  try {
+    const result = await model.generateContent([prompt]);
+    const response = result.response;
+    const text = response.text();
+    const jsonString = text.replace(/```json/g, "").replace(/```/g, "");
+    const json = JSON.parse(jsonString);
+
+    // Save to NocoDB
+    const nocodbUrl = process.env.NOCODB_URL;
+    const nocodbApiToken = process.env.NOCODB_API_TOKEN;
+    const nocodbProjectName = process.env.NOCODB_PROJECT_NAME;
+    const nocodbTableName = process.env.NOCODB_TABLE_NAME;
+
+    if (nocodbUrl && nocodbApiToken && nocodbProjectName && nocodbTableName) {
+      const nocodbApiUrl = `${nocodbUrl}/api/v2/tables/${nocodbTableName}/records`;
+
+      const nocodbData = {
+        "Product Name": productName,
+        "Product Price": productPrice,
+        "Product URL": productUrl,
+        Language: language,
+        Currency: currency,
+        "Num Images": numImages,
+        "Num Videos": numVideos,
+        "Figma Template": figmaTemplate,
+        "Pain Points": painPoints,
+        Description: json.description,
+        "SEO Keywords": json.seo_keywords.join(", "),
+        "Video Script": JSON.stringify(json.video_script),
+        "Image Prompts": json.image_prompts.join(", "),
+      };
+
+      console.log("NocoDB API URL:", nocodbApiUrl);
+      console.log("NocoDB Data:", nocodbData);
+
+      const nocodbResponse = await fetch(nocodbApiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "xc-token": nocodbApiToken,
+        },
+        body: JSON.stringify(nocodbData),
+      });
+
+      if (!nocodbResponse.ok) {
+        console.error(
+          "Error saving to NocoDB:",
+          nocodbResponse.status,
+          nocodbResponse.statusText,
+        );
+        const errorBody = await nocodbResponse.text();
+
+        console.error("NocoDB Error Body:", errorBody);
+      } else {
+        console.log("Data successfully saved to NocoDB!");
+      }
+    } else {
+      console.warn(
+        "NocoDB environment variables are not fully configured. Skipping NocoDB save.",
+      );
+    }
+
+    // Create Shopify Product
+    const shopifyStoreUrl = process.env.SHOPIFY_STORE_URL;
+    const shopifyAdminApiAccessToken =
+      process.env.SHOPIFY_ADMIN_API_ACCESS_TOKEN;
+    const shopifyApiVersion = "2024-04"; // Using a recent stable version
+
+    if (shopifyStoreUrl && shopifyAdminApiAccessToken) {
+      const shopifyApiUrl = `https://${shopifyStoreUrl}/admin/api/${shopifyApiVersion}/products.json`;
+
+      const productData = {
+        product: {
+          title: productName,
+          body_html: json.description,
+          vendor: "Generated by n8n Advanced Promoter", // You can customize this
+          product_type: "Digital Product", // You can customize this
+          status: "draft",
+          tags: json.seo_keywords.join(", "),
+          variants: [
+            {
+              price: productPrice,
+              sku: `${productName.replace(/\s/g, "-")}-${currency}`,
+              compare_at_price: productPrice,
+            },
+          ],
+        },
+      };
+
+      const shopifyResponse = await fetch(shopifyApiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Shopify-Access-Token": shopifyAdminApiAccessToken,
+        },
+        body: JSON.stringify(productData),
+      });
+
+      if (!shopifyResponse.ok) {
+        console.error(
+          "Error creating Shopify product:",
+          shopifyResponse.status,
+          shopifyResponse.statusText,
+        );
+        const errorBody = await shopifyResponse.text();
+
+        console.error("Shopify Error Body:", errorBody);
+      } else {
+        console.log("Shopify product created successfully!");
+      }
+    } else {
+      console.warn(
+        "Shopify environment variables are not fully configured. Skipping Shopify product creation.",
+      );
+    }
+
+    return NextResponse.json(json);
+  } catch (error) {
+    console.error(error);
+
+    return NextResponse.json(
+      { error: "Failed to generate content" },
+      { status: 500 },
+    );
+  }
+}

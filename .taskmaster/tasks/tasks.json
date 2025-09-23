@@ -1,0 +1,88 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Set up the n8n Workflow",
+        "description": "This task is to set up the modular n8n workflow, which will be the core of the automation.",
+        "details": "",
+        "testStrategy": "",
+        "status": "pending",
+        "dependencies": [],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 2,
+        "title": "Develop the Frontend",
+        "description": "This task is to develop the frontend of the application, which will be used to input data.",
+        "details": "",
+        "testStrategy": "",
+        "status": "pending",
+        "dependencies": [],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 3,
+        "title": "Set up the Database",
+        "description": "This task is to set up the database to store all the generated content and performance metrics.",
+        "details": "",
+        "testStrategy": "",
+        "status": "pending",
+        "dependencies": [],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 4,
+        "title": "Implement Advanced Prompt Engineering",
+        "description": "This task is to implement advanced prompt engineering for copywriting, image and video generation.",
+        "details": "",
+        "testStrategy": "",
+        "status": "pending",
+        "dependencies": [],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 5,
+        "title": "Create Comprehensive Documentation",
+        "description": "This task is to create comprehensive documentation for the project.",
+        "details": "",
+        "testStrategy": "",
+        "status": "pending",
+        "dependencies": [],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 6,
+        "title": "Set up Shopify Integration",
+        "description": "This task is to set up the Shopify integration to export products as drafts.",
+        "details": "",
+        "testStrategy": "",
+        "status": "pending",
+        "dependencies": [],
+        "priority": "medium",
+        "subtasks": []
+      },
+      {
+        "id": 7,
+        "title": "Set up Logging",
+        "description": "This task is to set up logging for all activities in Google Sheets and a TXT/Markdown file.",
+        "details": "",
+        "testStrategy": "",
+        "status": "pending",
+        "dependencies": [],
+        "priority": "medium",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2025-09-20T23:51:07.239Z",
+      "updated": "2025-09-20T23:51:15.472Z",
+      "description": "Tasks for master context"
+    }
+  }
+}
