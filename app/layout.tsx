@@ -61,7 +61,17 @@ export default function RootLayout({
             </footer>
           </div>
         </Providers>
-      </body>
+                <script
+                    dangerouslySetInnerHTML={{
+                        __html: `
+                            window.MAIKADO_CONFIG = {
+                                BACKEND_API_URL: '${process.env.NEXT_PUBLIC_BACKEND_API_URL}'
+                            };
+                        `,
+                    }}
+                />
+                <Script src="/tracking.js" />
+            </body>
     </html>
   );
 }

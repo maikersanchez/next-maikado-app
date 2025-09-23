@@ -1,7 +1,7 @@
 // tracking.js - Basic Analytics Tracking Script
 
 (function() {
-    const BACKEND_ANALYTICS_ENDPOINT = 'http://localhost:8000/analytics/ingest';
+    const BACKEND_ANALYTICS_ENDPOINT = `${window.MAIKADO_CONFIG?.BACKEND_API_URL || ''}/analytics/ingest`;
 
     // Function to get URL parameters
     function getUrlParameter(name) {
