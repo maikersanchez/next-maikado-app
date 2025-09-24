@@ -22,36 +22,29 @@ async function handler(request: Request, method: "GET" | "POST") {
     const { searchParams } = new URL(request.url);
     const path = searchParams.get("path") || "/jobs";
 
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+    };
+
     const options: RequestInit = {
       method,
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers,
     };
 
     if (method === "POST") {
-      let requestBody: any = {};
+      const rawBody = await request.text();
       const contentType = request.headers.get("content-type");
 
-      // Read the raw body as text first to avoid SyntaxError on empty body
-      const rawBody = await request.text();
-
-      if (rawBody && contentType && contentType.includes("application/json")) {
+      if (rawBody && contentType?.includes("application/json")) {
         try {
-          requestBody = JSON.parse(rawBody);
-          options.body = JSON.stringify(requestBody);
-        } catch (e) {
-
-          // If JSON parsing fails, proceed without a body
-          if (options.headers) {
-            delete options.headers["Content-Type"];
-          }
+          options.body = rawBody; // Forward the raw body
+        } catch (error) {
+          // If there's an issue (which is less likely now), we remove content type
+          delete headers["Content-Type"];
         }
       } else {
         // If no body or not application/json, ensure no body is sent and Content-Type is removed
-        if (options.headers) {
-          delete options.headers["Content-Type"];
-        }
+        delete headers["Content-Type"];
       }
     }
 
