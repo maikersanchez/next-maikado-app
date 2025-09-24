@@ -2,13 +2,13 @@ import "@/styles/globals.css";
 import { Metadata, Viewport } from "next";
 import { Link } from "@heroui/link";
 import clsx from "clsx";
+import Script from "next/script";
 
 import { Providers } from "./providers";
 
 import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
 import { Navbar } from "@/components/navbar";
-import Script from "next/script";
 
 export const metadata: Metadata = {
   title: {
@@ -65,7 +65,7 @@ export default function RootLayout({
         <Script id="maikado-config">
           {`
             window.MAIKADO_CONFIG = {
-              BACKEND_API_URL: '${process.env.NEXT_PUBLIC_BACKEND_API_URL || ''}'
+              BACKEND_API_URL: '${process.env.NEXT_PUBLIC_BACKEND_API_URL || ""}'
             };
           `}
         </Script>

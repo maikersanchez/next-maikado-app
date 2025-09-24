@@ -35,19 +35,23 @@ export default function NewJobPage() {
     console.log("Submitting form data:", formData);
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/create-job`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/create-job`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
         },
-        body: JSON.stringify(formData),
-      });
+      );
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const result = await response.json();
+
       console.log("Job created successfully:", result);
       alert(`Job created successfully!\nJob ID: ${result.job_id}`);
       // Optionally, redirect or clear the form
@@ -181,8 +185,8 @@ export default function NewJobPage() {
           <Button
             className="w-full"
             color="primary"
-            type="submit"
             disabled={isLoading}
+            type="submit"
           >
             {isLoading ? "Creating Job..." : "Create Job"}
           </Button>

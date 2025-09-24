@@ -109,12 +109,12 @@ export default function Home() {
             onValueChange={setProductUrl}
           />
           <div className="flex flex-col gap-2">
-            <label htmlFor="language-select" className="text-sm font-medium">
+            <label className="text-sm font-medium" htmlFor="language-select">
               Language
             </label>
             <select
-              id="language-select"
               className="bg-gray-100 border-2 border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              id="language-select"
               value={language}
               onChange={(e) => setLanguage(e.target.value)}
             >
@@ -124,12 +124,12 @@ export default function Home() {
             </select>
           </div>
           <div className="flex flex-col gap-2">
-            <label htmlFor="currency-select" className="text-sm font-medium">
+            <label className="text-sm font-medium" htmlFor="currency-select">
               Currency
             </label>
             <select
-              id="currency-select"
               className="bg-gray-100 border-2 border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              id="currency-select"
               value={currency}
               onChange={(e) => setCurrency(e.target.value)}
             >

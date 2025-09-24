@@ -65,22 +65,32 @@ export default function JobStatusPageClient() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data: Job[] = await response.json();
-      console.log('Raw API data:', data);
+
+      console.log("Raw API data:", data);
 
       setJobs(
         data.map((job) => {
           let inputParams: any = {};
-          if (typeof job.input_parameters === 'object' && job.input_parameters !== null) {
+
+          if (
+            typeof job.input_parameters === "object" &&
+            job.input_parameters !== null
+          ) {
             inputParams = job.input_parameters;
-          } else if (typeof job.input_parameters === 'string') {
+          } else if (typeof job.input_parameters === "string") {
             try {
               inputParams = JSON.parse(job.input_parameters);
             } catch (e) {
               try {
                 const correctedString = job.input_parameters.replace(/'/g, '"');
+
                 inputParams = JSON.parse(correctedString);
               } catch (e2) {
-                console.error("Failed to parse input_parameters string:", job.input_parameters, e2);
+                console.error(
+                  "Failed to parse input_parameters string:",
+                  job.input_parameters,
+                  e2,
+                );
               }
             }
           }
@@ -109,12 +119,9 @@ export default function JobStatusPageClient() {
   const handleRetry = React.useCallback(
     async (jobId: string) => {
       try {
-        const response = await fetch(
-          `/api/jobs?path=/jobs/${jobId}/retry`,
-          {
-            method: "POST",
-          },
-        );
+        const response = await fetch(`/api/jobs?path=/jobs/${jobId}/retry`, {
+          method: "POST",
+        });
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);

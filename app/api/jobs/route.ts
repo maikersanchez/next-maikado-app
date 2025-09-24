@@ -4,21 +4,23 @@ const BACKEND_INTERNAL_URL = process.env.BACKEND_INTERNAL_URL; // Must be set in
 
 // Self-check to ensure environment variable is set
 if (!BACKEND_INTERNAL_URL) {
-  console.error("FATAL: BACKEND_INTERNAL_URL is not defined. This is required for the API proxy to function.");
+  console.error(
+    "FATAL: BACKEND_INTERNAL_URL is not defined. This is required for the API proxy to function.",
+  );
   // We can't process any requests without this.
 }
 
-async function handler(request: Request, method: 'GET' | 'POST') {
+async function handler(request: Request, method: "GET" | "POST") {
   if (!BACKEND_INTERNAL_URL) {
     return NextResponse.json(
       { error: "Server configuration error: Backend URL not set." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
   try {
     const { searchParams } = new URL(request.url);
-    const path = searchParams.get('path') || '/jobs';
+    const path = searchParams.get("path") || "/jobs";
 
     const options: RequestInit = {
       method,
@@ -27,61 +29,74 @@ async function handler(request: Request, method: 'GET' | 'POST') {
       },
     };
 
-    if (method === 'POST') {
+    if (method === "POST") {
       let requestBody: any = {};
-      const contentType = request.headers.get('content-type');
-      
+      const contentType = request.headers.get("content-type");
+
       // Read the raw body as text first to avoid SyntaxError on empty body
       const rawBody = await request.text();
 
-      if (rawBody && contentType && contentType.includes('application/json')) {
+      if (rawBody && contentType && contentType.includes("application/json")) {
         try {
           requestBody = JSON.parse(rawBody);
           options.body = JSON.stringify(requestBody);
         } catch (e) {
-          console.warn("Proxy POST request received with invalid JSON body. Proceeding without body.", e);
+          console.warn(
+            "Proxy POST request received with invalid JSON body. Proceeding without body.",
+            e,
+          );
           // If JSON parsing fails, proceed without a body
-          delete options.headers['Content-Type'];
+          if (options.headers) {
+            delete options.headers["Content-Type"];
+          }
         }
       } else {
         // If no body or not application/json, ensure no body is sent and Content-Type is removed
-        delete options.headers['Content-Type'];
+        if (options.headers) {
+          delete options.headers["Content-Type"];
+        }
       }
     }
 
-    const backendResponse = await fetch(`${BACKEND_INTERNAL_URL}${path}`, options);
+    const backendResponse = await fetch(
+      `${BACKEND_INTERNAL_URL}${path}`,
+      options,
+    );
 
     if (!backendResponse.ok) {
       const errorBody = await backendResponse.text();
+
       console.error(`Backend error: ${backendResponse.status} - ${errorBody}`);
+
       return NextResponse.json(
         { error: `Backend error: ${backendResponse.statusText}` },
-        { status: backendResponse.status }
+        { status: backendResponse.status },
       );
     }
 
     // Handle potentially empty responses
     const responseText = await backendResponse.text();
+
     if (!responseText) {
-        return NextResponse.json({}, { status: backendResponse.status });
+      return NextResponse.json({}, { status: backendResponse.status });
     }
     const data = JSON.parse(responseText);
 
     return NextResponse.json(data);
-
   } catch (error: any) {
     console.error(`Proxy ${method} request failed:`, error);
+
     return NextResponse.json(
       { error: `Failed to process ${method} request to backend` },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function GET(request: Request) {
-  return handler(request, 'GET');
+  return handler(request, "GET");
 }
 
 export async function POST(request: Request) {
-  return handler(request, 'POST');
+  return handler(request, "POST");
 }
