@@ -67,12 +67,10 @@ export default function Home() {
         setVideoScript(data.video_script);
         setImagePrompts(data.image_prompts || []);
       } else {
-        console.error("Error sending data");
-        alert("Error sending data");
+
       }
     } catch (error) {
-      console.error("Error sending data", error);
-      alert("Error sending data");
+
     } finally {
       setLoading(false);
     }

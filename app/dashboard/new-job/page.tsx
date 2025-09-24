@@ -52,13 +52,13 @@ export default function NewJobPage() {
 
       const result = await response.json();
 
-      console.log("Job created successfully:", result);
-      alert(`Job created successfully!\nJob ID: ${result.job_id}`);
+      // console.log("Job created successfully:", result);
+      // alert(`Job created successfully!\nJob ID: ${result.job_id}`);
       // Optionally, redirect or clear the form
       // window.location.href = '/dashboard/jobs';
     } catch (error) {
-      console.error("Failed to create job:", error);
-      alert("Failed to create job. Check the console for more details.");
+      // console.error("Failed to create job:", error);
+      // alert("Failed to create job. Check the console for more details.");
     } finally {
       setIsLoading(false);
     }

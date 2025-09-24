@@ -41,10 +41,7 @@ async function handler(request: Request, method: "GET" | "POST") {
           requestBody = JSON.parse(rawBody);
           options.body = JSON.stringify(requestBody);
         } catch (e) {
-          console.warn(
-            "Proxy POST request received with invalid JSON body. Proceeding without body.",
-            e,
-          );
+
           // If JSON parsing fails, proceed without a body
           if (options.headers) {
             delete options.headers["Content-Type"];

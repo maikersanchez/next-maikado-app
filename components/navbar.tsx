@@ -26,17 +26,6 @@ import {
 } from "@/components/icons";
 
 export const Navbar = () => {
-  const navItemVariants = {
-    hidden: { opacity: 0, y: -10 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
-    hover: { scale: 1.05, transition: { duration: 0.2 } },
-  };
-
-  const brandVariants = {
-    hidden: { opacity: 0, x: -20 },
-    visible: { opacity: 1, x: 0, transition: { duration: 0.5 } },
-  };
-
   const searchInput = (
     <Input
       aria-label="Search"
