@@ -28,7 +28,25 @@ async function handler(request: Request, method: 'GET' | 'POST') {
     };
 
     if (method === 'POST') {
-      options.body = JSON.stringify(await request.json());
+      let requestBody: any = {};
+      const contentType = request.headers.get('content-type');
+      
+      // Read the raw body as text first to avoid SyntaxError on empty body
+      const rawBody = await request.text();
+
+      if (rawBody && contentType && contentType.includes('application/json')) {
+        try {
+          requestBody = JSON.parse(rawBody);
+          options.body = JSON.stringify(requestBody);
+        } catch (e) {
+          console.warn("Proxy POST request received with invalid JSON body. Proceeding without body.", e);
+          // If JSON parsing fails, proceed without a body
+          delete options.headers['Content-Type'];
+        }
+      } else {
+        // If no body or not application/json, ensure no body is sent and Content-Type is removed
+        delete options.headers['Content-Type'];
+      }
     }
 
     const backendResponse = await fetch(`${BACKEND_INTERNAL_URL}${path}`, options);
